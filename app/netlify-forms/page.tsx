@@ -2,8 +2,8 @@ export default function NetlifyFormsPage() {
   return (
     <div style={{ display: 'none' }}>
       {/* This page is only for Netlify Forms detection during build */}
-      <form name="junk-removal-leads" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-        <input type="hidden" name="form-name" value="junk-removal-leads" />
+      <form name="lead-form" method="POST" data-netlify="true" data-netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="lead-form" />
         <input type="hidden" name="city" />
         <input type="hidden" name="state" />
         <p style={{ display: 'none' }}>

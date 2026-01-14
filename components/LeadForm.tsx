@@ -34,7 +34,7 @@ export default function LeadForm({ city, state }: LeadFormProps) {
     const params = new URLSearchParams();
     
     // Add form-name first (required by Netlify)
-    params.append('form-name', 'junk-removal-leads');
+    params.append('form-name', 'lead-form');
     
     // Add all other fields
     formData.forEach((value, key) => {
@@ -165,16 +165,16 @@ export default function LeadForm({ city, state }: LeadFormProps) {
       </div>
 
       <form
-        name="junk-removal-leads"
+        name="lead-form"
         method="POST"
         data-netlify="true"
-        netlify-honeypot="bot-field"
+        data-netlify-honeypot="bot-field"
         encType="application/x-www-form-urlencoded"
         onSubmit={handleSubmit}
         className="space-y-5 sm:space-y-6 md:space-y-7"
       >
         {/* Hidden fields for Netlify */}
-        <input type="hidden" name="form-name" value="junk-removal-leads" />
+        <input type="hidden" name="form-name" value="lead-form" />
         <input type="hidden" name="city" value={city} />
         <input type="hidden" name="state" value={state} />
 
