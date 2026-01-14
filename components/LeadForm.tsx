@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 
 interface LeadFormProps {
   city: string;
@@ -11,6 +11,18 @@ export default function LeadForm({ city, state }: LeadFormProps) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Check for success parameter in URL (from Netlify redirect)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('success') === 'true') {
+        setIsSubmitted(true);
+        // Clean up URL
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
+  }, []);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -18,25 +30,58 @@ export default function LeadForm({ city, state }: LeadFormProps) {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
+    // Build URL-encoded string manually to ensure proper format
+    const params = new URLSearchParams();
+    
+    // Add form-name first (required by Netlify)
+    params.append('form-name', 'junk-removal-leads');
+    
+    // Add all other fields
+    formData.forEach((value, key) => {
+      if (key !== 'form-name') {
+        params.append(key, value.toString());
+      }
+    });
+
     try {
-      const response = await fetch('/', {
+      // Submit to current page (Netlify will intercept)
+      const response = await fetch(window.location.pathname, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(formData as any).toString(),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString(),
       });
 
+      // Netlify Forms returns 200 on success
       if (response.ok) {
         setIsSubmitted(true);
         form.reset();
+        setIsSubmitting(false);
       } else {
-        console.error('Form submission failed');
-        alert('There was an error submitting the form. Please try again.');
+        throw new Error('Form submission failed');
       }
     } catch (error) {
       console.error('Form submission error:', error);
-      alert('There was an error submitting the form. Please try again.');
-    } finally {
-      setIsSubmitting(false);
+      // If fetch fails, submit naturally as fallback
+      // This ensures Netlify definitely gets the submission
+      const hiddenForm = document.createElement('form');
+      hiddenForm.method = 'POST';
+      hiddenForm.action = window.location.pathname;
+      hiddenForm.style.display = 'none';
+      
+      // Copy all form data
+      formData.forEach((value, key) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value.toString();
+        hiddenForm.appendChild(input);
+      });
+      
+      document.body.appendChild(hiddenForm);
+      hiddenForm.submit();
+      // Page will reload, so state reset isn't needed
     }
   };
 
@@ -124,6 +169,7 @@ export default function LeadForm({ city, state }: LeadFormProps) {
         method="POST"
         data-netlify="true"
         netlify-honeypot="bot-field"
+        encType="application/x-www-form-urlencoded"
         onSubmit={handleSubmit}
         className="space-y-5 sm:space-y-6 md:space-y-7"
       >
