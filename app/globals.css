@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Apply Poppins font to all headings */
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-poppins), sans-serif;
+  }
+}
+
+/* Custom styles for city page company listings */
+@layer components {
+  /* Company cards - full card design with header */
+  .prose h3 {
+    @apply relative;
+  }
+  
+  /* Company name as card header (when followed by details) */
+  .prose h3:has(+ p > strong) {
+    @apply bg-gradient-to-r from-blue-600 to-blue-700 text-white;
+    @apply px-5 py-3.5 rounded-t-xl mb-0 text-lg font-bold;
+    @apply border-2 border-b-0 border-blue-600;
+    @apply mt-8 first:mt-0;
+  }
+  
+  /* Company info container - styled as card body */
+  .prose h3:has(+ .company-info-container) + .company-info-container,
+  .prose h3:has(+ p > strong) + p,
+  .prose .company-info-container {
+    @apply bg-white border-2 border-t-0 border-gray-200 rounded-b-xl;
+    @apply px-5 py-4 mb-0 shadow-lg;
+  }
+  
+  /* Company info items - each label and value pair */
+  .company-info-item {
+    @apply flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-2;
+    @apply mb-2 last:mb-0;
+    @apply text-sm;
+  }
+  
+  .company-info-label {
+    @apply text-sm font-semibold text-blue-700;
+    @apply whitespace-nowrap;
+    @apply flex-shrink-0;
+    @apply min-w-[120px] sm:min-w-[100px];
+  }
+  
+  .company-info-value {
+    @apply text-sm text-gray-700;
+    @apply flex-1;
+    @apply leading-relaxed;
+  }
+  
+  /* Fallback for old format - company details paragraph */
+  .prose h3:has(+ p > strong) + p {
+    @apply bg-white border-2 border-t-0 border-gray-200 rounded-b-xl;
+    @apply px-5 py-4 mb-0 shadow-lg;
+    @apply text-sm text-gray-700;
+    @apply leading-relaxed;
+  }
+  
+  /* Key info items - format each label and value pair (fallback) */
+  .prose h3:has(+ p > strong) + p strong {
+    @apply text-sm font-semibold text-blue-700;
+    @apply block;
+    @apply mt-3 first:mt-0;
+    @apply mb-1;
+  }
+  
+  /* Company description - smaller and less prominent */
+  .prose h3:has(+ p > strong) + p + p {
+    @apply text-gray-600 text-sm leading-relaxed;
+    @apply bg-gray-50 border-l-4 border-blue-400 pl-4 py-3 rounded-r;
+    @apply mb-8 mt-0;
+    @apply max-w-none;
+  }
+  
+  /* Better list styling */
+  .prose ul, .prose ol {
+    @apply space-y-2;
+  }
+  
+  /* Service type sections - different styling (not company cards) */
+  .prose h2 + h3:not(:has(+ p > strong)) {
+    @apply mt-6 bg-transparent text-gray-900 border-0;
+  }
+}
